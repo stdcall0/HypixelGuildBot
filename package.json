@@ -1,0 +1,26 @@
+{
+  "name": "hcnbot",
+  "version": "1.0.0",
+  "description": "A bot for Hypixel Gulid HelloChina.",
+  "main": "main.js",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/ImChinaNB/hcnbot.git"
+  },
+  "dependencies": {
+    "mineflayer": "^2.39.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "hypixel",
+    "mineflayer",
+    "bot",
+    "minecraft",
+    "hellochina"
+  ],
+  "author": "ChinaNB",
+  "license": "MIT"
+}
