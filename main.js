@@ -15,7 +15,7 @@ const GAM = C.bgGray(" # ")
 
 
 // ensure Data
-let validateConfig = (cfg, st) => {
+const validateConfig = (cfg, st) => {
   let ret = true;
   if (cfg == undefined) return false;
   if (typeof st == "object") {
@@ -24,11 +24,11 @@ let validateConfig = (cfg, st) => {
     ret = typeof cfg == typeof st;
   }
   return ret;
-};
-let configStructure = {
+}
+const configStructure = {
   "account": {"email": "", "password": ""},
   "server": {"host": "", "port": 0}
-};
+}
 if (!validateConfig(_, configStructure)) {
   console.error(C.bgGray.bold.red("ERR"), "Bad data.json file. Please check it and rerun the bot.");
   proc.exit(1)
@@ -55,6 +55,15 @@ const bot = mineflayer.createBot({
 })
 bot.chatAddPattern(/(.)(.*)/, 'anychat', 'All chat messages')
 bot.chatAddPattern(/^Guild > (.*): (.*)$/, 'guildchat', 'Guild chat messages')
+
+const msgRules = {
+  "guildjoining": {"re": /^(.*) has requested to join the Guild!.?$/, "cb": (player) => {
+
+  }},
+  "guildjoined": {"re": /^(.*) joined the guild!.?$/, "cb": (player) => {
+
+  }}
+}
 
 bot.on('error', err => {
   if (err.message == 'Invalid credentials. Invalid username or password.') {
@@ -84,8 +93,20 @@ bot.on('anychat', (a, b, c, rawmsg, e) => {
   let msg = rawmsg.getText().split('\n')
   msg.forEach((msg, index) => {
     lg(`${GAM} ${msg}`)
+    for (let i in msgRules) {
+      let o = msgRules[i]
+      if (o.re.test(msg)) {
+        let player = o.re.exec(msg)[1]
+        lg(`${DGB} Event ${i} triggered, sender ${player}`)
+        o.cb(player)
+      }
+    }
   });
 })
+/*
+<PLAYER> has requested to join the Guild!
+<PLAYER> joined the guild!
+*/
 
 bot.on('guildchat', (a, b) => {
   a = a.replace(/\[.*?\]/g, '').replace(' ', '')
