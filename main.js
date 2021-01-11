@@ -1,47 +1,25 @@
 // Main File for HCNBot.
 
 const mineflayer = require("mineflayer")
-const C = require('chalk')
 const proc = require('process')
-const repl = require('repl')
 const fs = require('fs')
 const _ = JSON.parse(fs.readFileSync('data.json', 'utf8'))
+const U = Object.assign(require('server_utils.js'), require('common_utils.js'))
 
-const ERR = C.bgGray.bold.red("ERR")
-const WRN = C.bgGray.bold.yellow("WRN")
-const MSG = C.bold.whiteBright("MSG")
-const DBG = C.bold.gray("DBG")
-const GAM = C.bgGray(" # ")
+const ver = "0.0.1 DEV"
 
-
-// ensure Data
-const validateConfig = (cfg, st) => {
-  let ret = true;
-  if (cfg == undefined) return false;
-  if (typeof st == "object") {
-    for (var i in st) ret &= validateConfig(cfg[i], st[i]);
-  } else {
-    ret = typeof cfg == typeof st;
-  }
-  return ret;
+let I = {
+  "fresh": [],
+  "valid": [],
+  "last_login": {}
 }
-const configStructure = {
-  "account": {"email": "", "password": ""},
-  "server": {"host": "", "port": 0}
-}
-if (!validateConfig(_, configStructure)) {
-  console.error(C.bgGray.bold.red("ERR"), "Bad data.json file. Please check it and rerun the bot.");
+
+if (!U.validateConfig(_)) {
+  console.error(U.ERR, "Bad data.json file. Please check it and rerun the bot.");
   proc.exit(1)
 }
 
-r = repl.start('> ')
-lg = r.context.lg = (a) => {
-  const promptOffset = r._prompt.length + r.line.length;
-  proc.stdout.write('\033[2K\033[1G') // erase to the beginning of the line
-  proc.stdout.write(a + "\n")
-  proc.stdout.write('' + r._prompt + r.line)
-  proc.stdout.write('\033[' + (promptOffset + 1) + 'G')
-};
+lg = U.initConsole()
 
 lg(`${MSG} Attempting to connect with following credentials:`)
 lg(`${MSG} ${C.yellow(_.account.email)}:**** -- ${C.whiteBright(_.server.host)}:${_.server.port}`)
@@ -62,6 +40,8 @@ const msgRules = {
   }},
   "guildjoined": {"re": /^(.*) joined the guild!.?$/, "cb": (player) => {
 
+  }},
+  "playerjoin": {"re": /^Guild> (.*) joined.$/, "cb": (player) => {
   }}
 }
 
@@ -106,6 +86,7 @@ bot.on('anychat', (a, b, c, rawmsg, e) => {
 /*
 <PLAYER> has requested to join the Guild!
 <PLAYER> joined the guild!
+Guild> <PLAYER> joined.
 */
 
 bot.on('guildchat', (a, b) => {
@@ -113,7 +94,7 @@ bot.on('guildchat', (a, b) => {
   b = b.trim()
   lg(`${DBG} Sender: ${a}`)
   if (a == bot.username) return;
-  if (b == "bot") bot.chat(`/gc @${a}: HCNBot is operational, version = 0.0.1 DEV.`)
+  if (b == "bot") bot.chat(`/gc @${a}: HCNBot is operational, version = ${version}.`)
 })
 
 bot.on('kicked', (reason, loggedIn) => lg(`${ERR} Bot got kicked: ${reason} - ${loggedIn}`))
