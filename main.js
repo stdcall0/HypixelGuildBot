@@ -1,5 +1,4 @@
 // Main File for HCNBot.
-
 const mineflayer = require("mineflayer")
 const proc = require('process')
 const fs = require('fs')
@@ -83,11 +82,6 @@ bot.on('anychat', (a, b, c, rawmsg, e) => {
     }
   });
 })
-/*
-<PLAYER> has requested to join the Guild!
-<PLAYER> joined the guild!
-Guild> <PLAYER> joined.
-*/
 
 bot.on('guildchat', (a, b) => {
   a = a.replace(/\[.*?\]/g, '').replace(' ', '')
@@ -98,3 +92,4 @@ bot.on('guildchat', (a, b) => {
 })
 
 bot.on('kicked', (reason, loggedIn) => lg(`${ERR} Bot got kicked: ${reason} - ${loggedIn}`))
+
