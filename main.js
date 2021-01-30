@@ -1,95 +1,21 @@
 // Main File for HCNBot.
-const mineflayer = require("mineflayer")
-const proc = require('process')
+
 const fs = require('fs')
-const _ = JSON.parse(fs.readFileSync('data.json', 'utf8'))
-const U = Object.assign(require('server_utils.js'), require('common_utils.js'))
+const proc = require('process')
+const common_utils = require('./common_utils')
+const defs = require('./defs')
+const bot = require('./bot')
 
-const ver = "0.0.1 DEV"
-
-let I = {
-  "fresh": [],
-  "valid": [],
-  "last_login": {}
+if (!fs.existsSync('config.json')) {
+  console.error(defs.ERR, "No config.json. Create it and rerun the bot.")
+  proc.exit(1)
 }
-
-if (!U.validateConfig(_)) {
-  console.error(U.ERR, "Bad data.json file. Please check it and rerun the bot.");
+const cfg = require('root-require')('config.json')
+if (!common_utils.validateConfig(cfg)) {
+  console.error(defs.ERR, "Bad config.json. Check it and rerun the bot.");
   proc.exit(1)
 }
 
-lg = U.initConsole()
-
-lg(`${MSG} Attempting to connect with following credentials:`)
-lg(`${MSG} ${C.yellow(_.account.email)}:**** -- ${C.whiteBright(_.server.host)}:${_.server.port}`)
-
-const bot = mineflayer.createBot({
-  "username": _.account.email,
-  "password": _.account.password,
-  "host": _.server.host,
-  "port": _.server.port,
-  "version": "1.8.8"
-})
-bot.chatAddPattern(/(.)(.*)/, 'anychat', 'All chat messages')
-bot.chatAddPattern(/^Guild > (.*): (.*)$/, 'guildchat', 'Guild chat messages')
-
-const msgRules = {
-  "guildjoining": {"re": /^(.*) has requested to join the Guild!.?$/, "cb": (player) => {
-
-  }},
-  "guildjoined": {"re": /^(.*) joined the guild!.?$/, "cb": (player) => {
-
-  }},
-  "playerjoin": {"re": /^Guild> (.*) joined.$/, "cb": (player) => {
-  }}
-}
-
-bot.on('error', err => {
-  if (err.message == 'Invalid credentials. Invalid username or password.') {
-    lg(`${ERR} Bad account. Please check it and rerun the bot.`)
-    proc.exit(2)
-  }
-  lg(`${ERR} ${C.bold("Unknown expection:")} ${err}`)
-})
-
-bot.on('login', () => {
-  r.context.bot = bot
-  r.on('exit', () => {
-    bot.end()
-  })
-
-  lg(`${MSG} Logged in.`)
-  bot.chat('/language english')
-  lg(`${MSG} Transferring to limbo...`)
-  bot.chat('/achat §')
-})
-
-bot.on('spawn', () => {
-  lg(`${DBG} Bot spawned.`)
-})
-
-bot.on('anychat', (a, b, c, rawmsg, e) => {
-  let msg = rawmsg.getText().split('\n')
-  msg.forEach((msg, index) => {
-    lg(`${GAM} ${msg}`)
-    for (let i in msgRules) {
-      let o = msgRules[i]
-      if (o.re.test(msg)) {
-        let player = o.re.exec(msg)[1]
-        lg(`${DGB} Event ${i} triggered, sender ${player}`)
-        o.cb(player)
-      }
-    }
-  });
-})
-
-bot.on('guildchat', (a, b) => {
-  a = a.replace(/\[.*?\]/g, '').replace(' ', '')
-  b = b.trim()
-  lg(`${DBG} Sender: ${a}`)
-  if (a == bot.username) return;
-  if (b == "bot") bot.chat(`/gc @${a}: HCNBot is operational, version = ${version}.`)
-})
-
-bot.on('kicked', (reason, loggedIn) => lg(`${ERR} Bot got kicked: ${reason} - ${loggedIn}`))
-
+const _ = common_utils.initializeConsole()
+const con = _[1], lg = _[0]
+const Bot = bot.getBot(cfg, con, lg, defs.msg_rules)
