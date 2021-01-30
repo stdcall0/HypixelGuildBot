@@ -18,12 +18,17 @@ exports.patterns = {
 }
 
 exports.msg_rules = {
-  "guild_joining": {"re": /^(.*) has requested to join the Guild!.?$/, "cb": (player) => {
+  "limbo_spawn": {"re": /^You were spawned in Limbo.$/, "cb": (player, bot) => {
+    setTimeout(() => bot.bot.chat(`/gc [BOT] HCNBot 已在线 - Powered by MineFlayer - Created by ImChinaNB.`), 1000)
+  }},
+  "guild_joining": {"re": /^(.*) has requested to join the Guild!.?$/, "cb": (player, bot) => {
 
   }},
-  "guild_joined": {"re": /^(.*) joined the guild!.?$/, "cb": (player) => {
+  "guild_joined": {"re": /^(.*) joined the guild!.?$/, "cb": (player, bot) => {
 
   }},
-  "player_join": {"re": /^Guild> (.*) joined.$/, "cb": (player) => {
+  "player_join": {"re": /^Guild> (.*) joined.$/, "cb": (player, bot) => {
   }}
 }
+
+exports.bypass_char = ['‎','‏','','','‍‌','‬']

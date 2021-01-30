@@ -18,4 +18,4 @@ if (!common_utils.validateConfig(cfg)) {
 
 const _ = common_utils.initializeConsole()
 const con = _[1], lg = _[0]
-const Bot = bot.getBot(cfg, con, lg, defs.msg_rules)
+const Bot = bot.getBot(cfg, con, lg)
