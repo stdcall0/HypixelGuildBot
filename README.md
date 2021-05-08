@@ -1,4 +1,4 @@
-# hcnbot
+# HypixelGuildBot
 A universal in-game bot for Hypixel guilds.
 
 `Hypixel` 公会游戏内机器人。
