@@ -1,7 +1,7 @@
 # hcnbot
-A Hypixel bot for the gulid HelloChina.
+A universal in-game bot for Hypixel guilds.
 
-`HelloChina` 公会游戏内机器人。
+`Hypixel` 公会游戏内机器人。
 
 ---
 
